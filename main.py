@@ -92,12 +92,10 @@ def encontra_linha_e_valor_pivo():
     print("Pivo = ", pivo)
 
 
-def atualiza_matriz_linha_pivo():
+def atualiza_matriz():
     for col in range(6):
         matriz[linhaPivo][col] = matriz[linhaPivo][col] / pivo
 
-
-def atualiza_matriz_demais_linhas():
     for linha in range(4):
         coeficiente = matriz[linha][colunaPivo]
         for lin in range(6):
@@ -120,7 +118,6 @@ def valida_z():
 
 
 def mostra_resultado():
-    # Resposta:
     print('\nResposta Final:')
     print('Max Z = ', matriz[3][5])
     print('X1 = ', matriz[2][5])
@@ -129,14 +126,11 @@ def mostra_resultado():
 
 # MAIN:
 cria_matriz_inicial()
-
 validaZ = True
 while validaZ:
     encontra_menor_valor_linha_Z()
     encontra_coluna_pivo()
     encontra_linha_e_valor_pivo()
-    atualiza_matriz_linha_pivo()
-    atualiza_matriz_demais_linhas()
+    atualiza_matriz()
     valida_z()
-
 mostra_resultado()
