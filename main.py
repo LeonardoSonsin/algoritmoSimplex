@@ -73,7 +73,6 @@ def encontra_coluna_pivo():
 
 def encontra_linha_e_valor_pivo():
     global linhaPivo, pivo
-
     for i in range(3):
         try:
             globals()[f"r{i}"] = matriz[i][5] / matriz[i][colunaPivo]
