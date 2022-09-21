@@ -10,6 +10,7 @@ def print_matriz():
             print("[{:1}] ".format(matriz[lin][col]), end='')  # Orientação e Organização
         print()  # Pula linha
 
+
 def cria_matriz_inicial():
     global matriz
     matriz = [0] * 4
@@ -71,36 +72,25 @@ def encontra_coluna_pivo():
 
 
 def encontra_linha_e_valor_pivo():
-    global menorResultado, linhaPivo, pivo
-    invalido: int = 9999999  # Serve para invalidar o resultado
+    global linhaPivo, pivo
 
-    if matriz[0][colunaPivo] > 0:
-        r1 = matriz[0][5] / matriz[0][colunaPivo]
-    else:
-        r1 = invalido
+    for i in range(3):
+        try:
+            globals()[f"r{i}"] = matriz[i][5] / matriz[i][colunaPivo]
+            if globals()[f"r{i}"] < 0:
+                globals()[f"r{i}"] = 999999
+        except ZeroDivisionError:
+            globals()[f"r{i}"] = 999999
 
-    if matriz[1][colunaPivo] > 0:
-        r2 = matriz[1][5] / matriz[1][colunaPivo]
-    else:
-        r2 = invalido
-
-    if matriz[2][colunaPivo] > 0:
-        r3 = matriz[2][5] / matriz[2][colunaPivo]
-    else:
-        r3 = invalido
-
-    menorResultado = r1
-    linhaPivo = 0
-    pivo = matriz[linhaPivo][colunaPivo]
-
-    if r2 < menorResultado:
-        menorResultado = r2
+    if globals()[f"r{0}"] <= globals()[f"r{1}"] and globals()[f"r{0}"] <= globals()[f"r{2}"]:
+        linhaPivo = 0
+    elif globals()[f"r{1}"] <= globals()[f"r{2}"]:
         linhaPivo = 1
-        pivo = matriz[linhaPivo][colunaPivo]
-    if r3 < menorResultado:
-        menorResultado = r3
+    else:
         linhaPivo = 2
-        pivo = matriz[linhaPivo][colunaPivo]
+
+    pivo = matriz[linhaPivo][colunaPivo]
+    print("Pivo = ", pivo)
 
 
 def atualiza_matriz_linha_pivo():
