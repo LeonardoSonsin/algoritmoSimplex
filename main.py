@@ -10,7 +10,6 @@ def print_matriz():
             print("[{:1}] ".format(matriz[lin][col]), end='')  # Orientação e Organização
         print()  # Pula linha
 
-
 def cria_matriz_inicial():
     global matriz
     matriz = [0] * 4
@@ -73,20 +72,22 @@ def encontra_coluna_pivo():
 
 def encontra_linha_e_valor_pivo():
     global menorResultado, linhaPivo, pivo
-    execao: int = 9999999  # Serve para invalidar o resultado
+    invalido: int = 9999999  # Serve para invalidar o resultado
 
-    try:
+    if matriz[0][colunaPivo] > 0:
         r1 = matriz[0][5] / matriz[0][colunaPivo]
-    except:
-        r1 = execao
-    try:
+    else:
+        r1 = invalido
+
+    if matriz[1][colunaPivo] > 0:
         r2 = matriz[1][5] / matriz[1][colunaPivo]
-    except:
-        r2 = execao
-    try:
+    else:
+        r2 = invalido
+
+    if matriz[2][colunaPivo] > 0:
         r3 = matriz[2][5] / matriz[2][colunaPivo]
-    except:
-        r3 = execao
+    else:
+        r3 = invalido
 
     menorResultado = r1
     linhaPivo = 0
@@ -133,9 +134,8 @@ def mostra_resultado():
     # Resposta:
     print('\nResposta Final:')
     print('Max Z = ', matriz[3][5])
-    print('Max X1 = ', matriz[2][5])
-    print('Max X2 = ', matriz[1][5])
-    print('Max F1 = ', matriz[0][5])
+    print('X1 = ', matriz[2][5])
+    print('X2 = ', matriz[1][5])
 
 
 # MAIN:
