@@ -1,6 +1,10 @@
-print('!! ALGORITMO SIMPLEX !!')
-print('Aluno: Leonardo Tozato Sonsin')
-print('RA: 591904')
+print('!! ALGORITMO SIMPLEX FIXO !!')
+
+print('\nEquipe: '
+      '\nLeonardo Tozato Sonsin            RA: 591904'
+      '\nLucas de Oliveira Baptista        RA: 588180'
+      '\nLucas Rinaldi Rodrigues           RA: 591890'
+      '\nMatheus Francisco Leite de Sousa  RA: 588458')
 
 
 def print_matriz():
@@ -19,33 +23,37 @@ def cria_matriz_inicial():
         for col in range(0, 6):
             matriz[lin][col] = 0
 
+    # Identificação das Bases
+    for b in range(3):
+        globals()[f"B{b}"] = "F{}".format(b)
+
     # F1
-    matriz[0][0] = 1
-    matriz[0][1] = 0
+    matriz[0][0] = 2
+    matriz[0][1] = 1
     matriz[0][2] = 1
     matriz[0][3] = 0
     matriz[0][4] = 0
-    matriz[0][5] = 6
+    matriz[0][5] = 18
 
     # F2
-    matriz[1][0] = 0
-    matriz[1][1] = 2
+    matriz[1][0] = 2
+    matriz[1][1] = 3
     matriz[1][2] = 0
     matriz[1][3] = 1
     matriz[1][4] = 0
-    matriz[1][5] = 12
+    matriz[1][5] = 42
 
     # F3
     matriz[2][0] = 3
-    matriz[2][1] = 2
+    matriz[2][1] = 1
     matriz[2][2] = 0
     matriz[2][3] = 0
     matriz[2][4] = 1
-    matriz[2][5] = 18
+    matriz[2][5] = 24
 
     # Z
-    matriz[3][0] = -5
-    matriz[3][1] = -6
+    matriz[3][0] = -3
+    matriz[3][1] = -2
     matriz[3][2] = 0
     matriz[3][3] = 0
     matriz[3][4] = 0
@@ -58,9 +66,10 @@ def cria_matriz_inicial():
 def encontra_menor_valor_linha_Z():
     global menorValorNegativoZ
     menorValorNegativoZ = 0
-    for col in range(4):
+    for col in range(5):
         if matriz[3][col] < menorValorNegativoZ:
             menorValorNegativoZ = matriz[3][col]
+            print('\nMenor valor negativo Z =', menorValorNegativoZ)
 
 
 def encontra_coluna_pivo():
@@ -69,6 +78,20 @@ def encontra_coluna_pivo():
         for col in range(6):
             if matriz[lin][col] == menorValorNegativoZ:
                 colunaPivo = col
+
+
+def encontra_coluna_base():
+    global colunaBase
+    if colunaPivo == 0:
+        colunaBase = 'X1'
+    elif colunaPivo == 1:
+        colunaBase = 'X2'
+    elif colunaPivo == 2:
+        colunaBase = 'F1'
+    elif colunaPivo == 3:
+        colunaBase = 'F2'
+    elif colunaPivo == 4:
+        colunaBase = 'F3'
 
 
 def encontra_linha_e_valor_pivo():
@@ -83,13 +106,16 @@ def encontra_linha_e_valor_pivo():
 
     if globals()[f"r{0}"] <= globals()[f"r{1}"] and globals()[f"r{0}"] <= globals()[f"r{2}"]:
         linhaPivo = 0
+        globals()[f"B{0}"] = colunaBase
     elif globals()[f"r{1}"] <= globals()[f"r{2}"]:
         linhaPivo = 1
+        globals()[f"B{1}"] = colunaBase
     else:
         linhaPivo = 2
+        globals()[f"B{2}"] = colunaBase
 
     pivo = matriz[linhaPivo][colunaPivo]
-    print("Pivo = ", pivo)
+    print("Pivo =", pivo)
 
 
 def atualiza_matriz():
@@ -102,15 +128,16 @@ def atualiza_matriz():
             if linhaPivo != linha:
                 matriz[linha][lin] = matriz[linha][lin] - (coeficiente * matriz[linhaPivo][lin])
         linha += 1
-        print()
-        print('Atualiza Matriz:')
-        print_matriz()
+    print()
+    print('Atualiza Matriz:')
+    print_matriz()
 
 
 def valida_z():
     global validaZ
-    for col in range(4):
-        if matriz[3][col] < 0:
+    for col in range(5):
+        x = round(matriz[3][col])
+        if x < 0:
             validaZ = True
             break
         else:
@@ -119,9 +146,10 @@ def valida_z():
 
 def mostra_resultado():
     print('\nResposta Final:')
-    print('Max Z = ', matriz[3][5])
-    print('X1 = ', matriz[2][5])
-    print('X2 = ', matriz[1][5])
+    print('Solução ótima de Z =', matriz[3][5])
+    print(globals()[f"B{0}"] + " =", matriz[0][5])
+    print(globals()[f"B{1}"] + " =", matriz[1][5])
+    print(globals()[f"B{2}"] + " =", matriz[2][5])
 
 
 # MAIN:
@@ -130,6 +158,7 @@ validaZ = True
 while validaZ:
     encontra_menor_valor_linha_Z()
     encontra_coluna_pivo()
+    encontra_coluna_base()
     encontra_linha_e_valor_pivo()
     atualiza_matriz()
     valida_z()

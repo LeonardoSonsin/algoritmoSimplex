@@ -1,6 +1,10 @@
-print('!! ALGORITMO SIMPLEX !!')
-print('Aluno: Leonardo Tozato Sonsin')
-print('RA: 591904')
+print('!! ALGORITMO SIMPLEX DINÂMICO !!')
+
+print('\nEquipe: '
+      '\nLeonardo Tozato Sonsin            RA: 591904'
+      '\nLucas de Oliveira Baptista        RA: 588180'
+      '\nLucas Rinaldi Rodrigues           RA: 591890'
+      '\nMatheus Francisco Leite de Sousa  RA: 588458')
 
 
 def print_matriz():
@@ -32,16 +36,18 @@ def cria_matriz_inicial():
     for i in range(linhas):
         matriz[i][colunas - posicao] = 1
         posicao -= 1
+        # Identificação das Bases
+        globals()[f"B{i}"] = "F{}".format(i + 1)
 
 
 def preenche_matriz_inicial():
     for i in range(num_variaveis):
-        matriz[linhas][i] = - int(input('X{} da Função: '.format(i + 1)))
+        matriz[linhas][i] = - float(input('X{} da Função: '.format(i + 1)))
     print()
     for i in range(num_restricoes):
         for j in range(num_variaveis):
-            matriz[i][j] = int(input('X{} da {}ª restrição: '.format(j + 1, i + 1)))
-        matriz[i][colunas] = int(input('Resultado da {}ª restrição: '.format(i + 1)))
+            matriz[i][j] = float(input('X{} da {}ª restrição: '.format(j + 1, i + 1)))
+        matriz[i][colunas] = float(input('Resultado da {}ª restrição: '.format(i + 1)))
         print()
     print('Matriz Inicial:')
     print_matriz()
@@ -50,9 +56,10 @@ def preenche_matriz_inicial():
 def encontra_menor_valor_linha_Z():
     global menorValorNegativoZ
     menorValorNegativoZ = 0
-    for col in range(colunas):
+    for col in range(colunas + 1):
         if matriz[linhas][col] < menorValorNegativoZ:
             menorValorNegativoZ = matriz[linhas][col]
+    print('\nMenor valor negativo Z =', menorValorNegativoZ)
 
 
 def encontra_coluna_pivo():
@@ -62,6 +69,18 @@ def encontra_coluna_pivo():
             if matriz[lin][col] == menorValorNegativoZ:
                 colunaPivo = col
 
+
+def encontra_coluna_base():
+    global colunaBase
+    for i in range(colunas):
+        if i < num_variaveis:
+            if colunaPivo == i:
+                colunaBase = 'X{}'.format(i + 1)
+                break
+        else:
+            if colunaPivo == i:
+                colunaBase = 'F{}'.format(i - num_variaveis + 1)
+                break
 
 def encontra_linha_e_valor_pivo():
     global linhaPivo, pivo
@@ -77,7 +96,10 @@ def encontra_linha_e_valor_pivo():
         if globals()[f"r{i}"] < menor:
             menor = globals()[f"r{i}"]
             linhaPivo = i
+
+    globals()[f"B{linhaPivo}"] = colunaBase
     pivo = matriz[linhaPivo][colunaPivo]
+    print("Pivo =", pivo)
 
 
 def atualiza_matriz():
@@ -90,21 +112,25 @@ def atualiza_matriz():
             if linhaPivo != linha:
                 matriz[linha][lin] = matriz[linha][lin] - (coeficiente * matriz[linhaPivo][lin])
         linha += 1
+    print('\nAtualiza Matriz:')
+    print_matriz()
 
 
 def valida_z():
     global validaZ
-    print('\nAtualiza Matriz:')
-    print_matriz()
-    print()
-    print('X{} = '.format(colunaPivo + 1), matriz[linhaPivo][colunas])
-
-    for col in range(linhas + 1):
+    for col in range(linhas + 2):
         if matriz[linhas][col] < 0:
             validaZ = True
             break
         else:
             validaZ = False
+
+
+def mostra_resultado():
+    print('\nResposta Final:')
+    for i in range (linhas):
+        print(globals()[f"B{i}"] + " =", matriz[i][colunas])
+    print('Solução ótima de Z =', matriz[linhas][colunas])
 
 
 # MAIN:
@@ -115,7 +141,8 @@ validaZ = True
 while validaZ:
     encontra_menor_valor_linha_Z()
     encontra_coluna_pivo()
+    encontra_coluna_base()
     encontra_linha_e_valor_pivo()
     atualiza_matriz()
     valida_z()
-print('Max Z = ', matriz[linhas][colunas])
+mostra_resultado()

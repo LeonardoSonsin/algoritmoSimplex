@@ -7,118 +7,188 @@ Professor: Ricardo Sabatine
 Objetivo: Criar um algoritmo capaz de resolver um problema de programação linear pelo método Simplex.
 ------------------------------------------------------------------------------------------------------
 Problema:
-  Maximize:  Z = 5X1 + 6X2
-  Sujeito a: X1 <= 6
-             2X2 <= 12
-             3X1 + 2X2 <= 18
+  Maximize:  Z = 3X1 + 2X2
+  Sujeito a: 2X1 + 1X2 <= 18
+             2X2 + 3X2 <= 42
+             3X1 + 1X2 <= 24
   para:      X1 >= 0, X2 >= 0
 ------------------------------------------------------------------------------------------------------
 Solução:
   Criar novas expressões com a variável de folga:
-    X1 + F1 = 6
-    2X2 + F2 = 12
-    3X1 + 2X2 + F3 = 18
+    2X1 + 1X2 + F1 = 18
+    2X2 + 3X2 + F2 = 42
+    3X1 + 1X2 + F3 = 24
 
   Criar matriz com as informações:
   BASE  X1  X2  F1  F2  F3  B
-  F1    1   0   1   0   0   6
-  F2    0   2   0   1   0   12
-  F3    3   2   0   0   1   18
-  Z    -5  -6   0   0   0   0 (troca sinal)
+  F1    2   1   1   0   0   18
+  F2    2   3   0   1   0   42
+  F3    3   1   0   0   1   24
+  Z    -3  -2   0   0   0   0 (troca sinal)
 
   Escolher a variável que entra na base (maior número negativo de Z):
-  Coluna Pivô = X2 = -6
+  Coluna Pivô = X1 = -3
 
   Escolher a varíável que sai da base (dividir B pelo correspondente da coluna do pivô, escolhe o menor resultado):
-  1º 6/0 = (não realiza o cálculo quando 0)
-  2º 12/2 = 6 (F2 -> Variável de folga que sai da base) (Linha Pivô)
-  3º 18/2 = 9 (F3 > F2)
+  1º 18/2 = 9  (F1 > F3)
+  2º 42/2 = 21 (F2 > F1)
+  3º 24/3 = 8  (F3 -> Variável de folga que sai da base) (Linha Pivô)
 
-  Intersecção da coluna pivô com linha pivô (X2 x F2) -> Elemento Pivô = 2
+  Intersecção da coluna pivô com linha pivô (X1 x F3) -> Elemento Pivô = 3
 
   Atualizar tabela (Linha do pivô):
     BASE  X1  X2  F1  F2  F3  B
-    F1    1   0   1   0   0   6
-    X2    0   1   0  1/2  0   6 (Linha do pivô (F2) -> Elemento novo = Elemento anterior / Pivô)
-    F3    3   2   0   0   1   18
-    Z    -5  -6   0   0   0   0
+    F1    2   1   1   0   0   18
+    F2    2   3   0   1   0   42
+    X1    1  1/3  0   0  1/3  8 (Linha do pivô (F3) -> Elemento novo = Elemento anterior / Pivô)
+    Z    -3  -2   0   0   0   0
 
   Atualizar tabela (Demais linhas):
-    Demais linhas -> Elemento novo = Elemento Anterior Linha - (Coeficiente * Novo Elemento Linha Pivô)
     Coeficiente = Elemento da respectiva linha na coluna pivô
+    Demais linhas -> Elemento novo = Elemento Anterior Linha - (Coeficiente * Novo Elemento Linha Pivô)
 
-    Linha F3 (Coeficiente = 2):
-    3 - (2 * 0) = 3
-    2 - (2 * 1) = 0
-    0 - (2 * 0) = 0
-    0 - (2 * 1/2) = -1
-    1 - (2 * 0) = 1
-    18 - (2 * 6) = 6
+    Linha F1 (Coeficiente = 2):
+    2  - (2 * 1)   = 0
+    1  - (2 * 1/3) = 1/3
+    1  - (2 * 0)   = 1
+    0  - (2 * 0)   = 0
+    0  - (2 * 1/3) = -2/3
+    18 - (2 * 8)   = 2
 
-    Linha Z (Coeficiente = -6):
-    -5 - (-6 * 0) = -5
-    -6 - (-6 * 1) = 0
-    0 - (-6 * 0) = 0
-    0 - (-6 * 1/2) = 3
-    0 - (-6 * 0) = 0
-    0 - (-6 * 6) = 36
+    Linha F2 (Coeficiente = 2):
+    2  - (2 * 1)   = 0
+    3  - (2 * 1/3) = 7/3
+    0  - (2 * 0)   = 0
+    1  - (2 * 0)   = 1
+    0  - (2 * 1/3) = -2/3
+    42 - (2 * 8)   = 26
 
-    BASE  X1  X2  F1  F2  F3  B
-    F1    1   0   1   0   0   6
-    X2    0   1   0  1/2  0   6
-    F3    3   0   0  -1   1   6
-    Z    -5   0   0   3   0   36
+    Linha Z (Coeficiente = -3):
+   -3 - (-3 * 1)   = 0
+   -2 - (-3 * 1/3) = -1
+    0 - (-3 * 0)   = 0
+    0 - (-3 * 0)   = 0
+    0 - (-3 * 1/3) = 1
+    0 - (-3 * 8)   = 24
+
+    BASE  X1   X2   F1   F2   F3   B
+    F1    0   1/3   1    0  -2/3   2
+    F2    0   7/3   0    1  -2/3   26
+    X1    1   1/3   0    0   1/3   8
+    Z     0   -1    0    0    1    24
 
   Repetir o processo enquanto ainda houver valores negativos em Z:
     Escolher a variável que entra na base (maior número negativo de Z):
-    Coluna Pivô = X1 = -5
+    Coluna Pivô = X2 = -1
 
     Escolher a varíável que sai da base (dividir B pelo correspondente da coluna do pivô, escolhe o menor resultado):
-    1º 6/1 = 6 (F1 > F3)
-    2º 6/0 = (não realiza o cálculo quando 0)
-    3º 6/3 = 2 (F3 -> Variável de folga que sai da base) (Linha Pivô)
+    1º 2/ 1/3  = 6  (F1 -> Variável de folga que sai da base) (Linha Pivô)
+    2º 26/ 7/3 = 11 (F2 > F1)
+    3º 8/ 1/3  = 24 (X1 > F1)
 
-    Intersecção da coluna pivô com linha pivô (X1 x F3) -> Elemento Pivô = 3
+    Intersecção da coluna pivô com linha pivô (X2 x F1) -> Elemento Pivô = 1/3
 
     Atualizar tabela (Linha do pivô):
-      BASE  X1  X2  F1  F2  F3  B
-      F1    1   0   1   0   0   6
-      X2    0   1   0  1/2  0   6
-      X1    1   0   0 -1/3  1/3 2 (Linha do pivô (F3) -> Elemento novo = Elemento anterior / Pivô)
-      Z    -5   0   0   3   0   36
+    BASE  X1   X2   F1   F2   F3   B
+    F1    0    1    3    0   -2    6 (Linha do pivô (F1) -> Elemento novo = Elemento anterior / Pivô)
+    F2    0   7/3   0    1  -2/3   26
+    X1    1   1/3   0    0   1/3   8
+    Z     0   -1    0    0    1    24
 
     Atualizar tabela (Demais linhas):
       Demais linhas -> Elemento novo = Elemento Anterior Linha - (Coeficiente * Novo Elemento Linha Pivô)
       Coeficiente = Elemento da respectiva linha na coluna pivô
 
-      Linha F1 (Coeficiente = 1):
-      1 - (1 * 1) = 0
-      0 - (1 * 0) = 0
-      1 - (1 * 0) = 1
-      0 - (1 * -1/3) = 1/3
-      0 - (1 * 1/3) = -1/3
-      6 - (1 * 2) = 4
+      Linha F2 (Coeficiente = 7/3):
+      0    - (7/3 * 0)  = 0
+      7/3  - (7/3 * 1)  = 0
+      0    - (7/3 * 3)  = -7
+      1    - (7/3 * 0)  = 1
+     -2/3  - (7/3 * -2) = 4
+      26   - (7/3 * 6)  = 12
 
-      Linha Z (Coeficiente = -5):
-     -5 - (-5 * 1) = 0
-      0 - (-5 * 0) = 0
-      0 - (-5 * 0) = 0
-      3 - (-5 * -1/3) = 4/3
-      0 - (-5 * 1/3) = 5/3
-      36 - (-5 * 2) = 46
+      Linha X1 (Coeficiente = 1/3):
+      1    - (1/3 * 0)  = 1
+      1/3  - (1/3 * 1)  = 0
+      0    - (1/3 * 3)  = -1
+      0    - (1/3 * 0)  = 0
+      1/3  - (1/3 * -2) = 1
+      8   -  (1/3 * 6)  = 6
 
-      BASE  X1  X2  F1  F2  F3   B
-      F1    0   0   1  1/3 -1/3  4
-      X2    0   1   0  1/2   0   6
-      X1    1   0   0 -1/3  1/3  2
-      Z     0   0   0  4/3  5/3  46
+      Linha Z (Coeficiente = -1):
+      0  - (-1 * 0)  = 0
+     -1  - (-1 * 1)  = 0
+      0  - (-1 * 3)  = 3
+      0  - (-1 * 0)  = 0
+      1  - (-1 * -2) = -1
+      24 - (-1 * 6)  = 30
+
+      BASE  X1  X2  F1  F2  F3  B
+      X2    0   1   3   0  -2   6
+      F2    0   0  -7   1   4   12
+      X1    1   0  -1   0   1   6
+      Z     0   0   3   0  -1   30
+
+
+    Repetir o processo enquanto ainda houver valores negativos em Z:
+        Escolher a variável que entra na base (maior número negativo de Z):
+        Coluna Pivô = F3 = -1
+
+    Escolher a varíável que sai da base (dividir B pelo correspondente da coluna do pivô, escolhe o menor resultado):
+    1º 6/-2 = -3 (F1 -> Não pode ser valor negativo)
+    2º 12/4 = 3  (F2 -> Variável de folga que sai da base) (Linha Pivô)
+    3º 6/1  = 6  (X1 > F2)
+
+    Intersecção da coluna pivô com linha pivô (F2 x F3) -> Elemento Pivô = 4
+
+    Atualizar tabela (Linha do pivô):
+      BASE  X1  X2  F1  F2  F3  B
+      X2    0   1   3   0  -2   6
+      F2    0   0 -7/4 1/4  1   3 (Linha do pivô (F2) -> Elemento novo = Elemento anterior / Pivô)
+      X1    1   0  -1   0   1   6
+      Z     0   0   3   0  -1   30
+
+    Atualizar tabela (Demais linhas):
+      Demais linhas -> Elemento novo = Elemento Anterior Linha - (Coeficiente * Novo Elemento Linha Pivô)
+      Coeficiente = Elemento da respectiva linha na coluna pivô
+
+      Linha F1 (Coeficiente = -2):
+      0 - (-2 * 0)    = 0
+      1 - (-2 * 0)    = 1
+      3 - (-2 * -7/4) = -1/2
+      0 - (-2 * 1/4)  = 1/2
+     -2 - (-2 * 1)    = 0
+      6 - (-2 * 3)    = 12
+
+      Linha X1 (Coeficiente = 1):
+      1 - (1 * 0)    = 1
+      0 - (1 * 0)    = 0
+     -1 - (1 * -7/4) = 3/4
+      0 - (1 * 1/4)  = -1/4
+      1 - (1 * 1)    = 0
+      6 - (1 * 3)    = 3
+
+      Linha Z (Coeficiente = -1):
+      0  - (-1 * 0)    = 0
+      0  - (-1 * 0)    = 0
+      3  - (-1 * -7/4) = 5/4
+      0  - (-1 * 1/4)  = 1/4
+     -1  - (-1 * 1)    = 0
+      30 - (-1 * 3)    = 33
+
+      BASE  X1   X2   F1   F2    F3  B
+      X2    0    1  -1/2   1/2   0   12
+      F3    0    0  -7/4   1/4   1   3
+      X1    1    0   3/4  -1/4   0   3
+      Z     0    0   5/4   1/4   0   33
+
 
 * Não existem mais valores negativos em Z, sendo assim:
 
   RESPOSTA:
-  Max Z = 46
-  X1 = 2
-  X2 = 6
-  F1 = 4
+  Max Z = 33
+  X1 = 3
+  X2 = 12
+  F1 = 0
   F2 = 0
-  F3 = 0
+  F3 = 3
