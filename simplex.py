@@ -134,15 +134,22 @@ def mostra_resultado():
 
 
 # MAIN:
-recebe_variaveis()
-cria_matriz_inicial()
-preenche_matriz_inicial()
-validaZ = True
-while validaZ:
-    encontra_menor_valor_linha_Z()
-    encontra_coluna_pivo()
-    encontra_coluna_base()
-    encontra_linha_e_valor_pivo()
-    atualiza_matriz()
-    valida_z()
-mostra_resultado()
+continuar = True
+
+while continuar:
+    recebe_variaveis()
+    cria_matriz_inicial()
+    preenche_matriz_inicial()
+    validaZ = True
+    while validaZ:
+        encontra_menor_valor_linha_Z()
+        encontra_coluna_pivo()
+        encontra_coluna_base()
+        encontra_linha_e_valor_pivo()
+        atualiza_matriz()
+        valida_z()
+    mostra_resultado()
+
+    x = input('\nDeseja fazer outro exercício? s/n')
+    if x == 'n':
+        continuar = False
