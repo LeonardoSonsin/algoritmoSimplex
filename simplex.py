@@ -134,9 +134,7 @@ def mostra_resultado():
 
 
 # MAIN:
-continuar = True
 
-while continuar:
     recebe_variaveis()
     cria_matriz_inicial()
     preenche_matriz_inicial()
@@ -152,4 +150,5 @@ while continuar:
 
     x = input('\nDeseja fazer outro exercício? s/n')
     if x == 'n':
-        continuar = False
+        xp = False
+

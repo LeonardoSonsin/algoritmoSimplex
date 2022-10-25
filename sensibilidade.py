@@ -61,9 +61,6 @@ def cria_matriz_inicial():
     matriz[3][4] = 0
     matriz[3][5] = 0
 
-    print("\nMatriz Inicial:")
-    print_matriz()
-
 
 def encontra_menor_valor_linha_Z():
     global menorValorNegativoZ
@@ -127,9 +124,6 @@ def atualiza_matriz():
             if linhaPivo != linha:
                 matriz[linha][lin] = matriz[linha][lin] - (coeficiente * matriz[linhaPivo][lin])
         linha += 1
-    print()
-    print('Atualiza Matriz:')
-    print_matriz()
 
 
 def valida_z():
@@ -142,13 +136,27 @@ def valida_z():
         else:
             validaZ = False
 
+def closestToZero(var1, var2, var3):
+    # cria um array com as variáveis
+    arr = np.array([var1, var2, var3])
 
-def mostra_resultado():
-    print('\nResposta Final:')
-    print('Solução ótima de Z =', matriz[3][5])
-    print(globals()[f"B{0}"] + " =", matriz[0][5])
-    print(globals()[f"B{1}"] + " =", matriz[1][5])
-    print(globals()[f"B{2}"] + " =", matriz[2][5])
+    # calcula a diferença dos itens do array
+    difference_array = np.absolute(arr)
+
+    # encontra o index do elemento minimo no array
+    index = difference_array.argmin()
+
+    # cria novo array sem o item encontrado anteriormente
+    new_arr = np.delete(arr, index)
+
+    # calcula a diferença dos itens do novo array
+    difference_array = np.absolute(new_arr)
+
+    # encontra o index do elemento minimo do novo array
+    index = difference_array.argmin()
+
+    # retorna os valores encontrados
+    return arr[index], new_arr[index]
 
 
 # MAIN:
@@ -161,4 +169,85 @@ while validaZ:
     encontra_linha_e_valor_pivo()
     atualiza_matriz()
     valida_z()
-mostra_resultado()
+
+# ANÁLISE DE SENSIBILIDADE
+
+# Criar nova matriz
+matrizSensibilidade = [0] * 7
+for lin in range(0, 7):
+    matrizSensibilidade[lin] = [0] * 5
+    for col in range(0, 5):
+        matrizSensibilidade[lin][col] = 0
+
+# CALCULA F1
+AF1 = round((matriz[0][5] / matriz[0][2]) * -1)
+BF1 = round((matriz[1][5] / matriz[1][2]) * -1)
+CF1 = round((matriz[2][5] / matriz[2][2]) * -1)
+arrF1 = np.array([closestToZero(AF1, BF1, CF1)])
+
+# CALCULA F2
+AF2 = round((matriz[0][5] / matriz[0][3]) * -1)
+BF2 = round((matriz[1][5] / matriz[1][3]) * -1)
+CF2 = round((matriz[2][5] / matriz[2][3]) * -1)
+arrF2 = np.array([closestToZero(AF2, BF2, CF2)])
+
+# CALCULA F3
+AF3 = 0
+BF3 = round((matriz[1][5] / matriz[1][4]) * -1)
+CF3 = 0
+arrF3 = np.array([closestToZero(AF3, BF3, CF3)])
+
+# INFO
+matrizSensibilidade[0][0] = 'VAR'
+matrizSensibilidade[0][1] = 'V.F'
+matrizSensibilidade[0][2] = 'P.S'
+matrizSensibilidade[0][3] = ' + '
+matrizSensibilidade[0][4] = ' - '
+
+# X1
+matrizSensibilidade[1][0] = 'X1'
+matrizSensibilidade[1][1] = round(matriz[1][5])
+matrizSensibilidade[1][2] = ' - '
+matrizSensibilidade[1][3] = ' - '
+matrizSensibilidade[1][4] = ' - '
+
+# X2
+matrizSensibilidade[2][0] = 'X2'
+matrizSensibilidade[2][1] = round(matriz[0][5])
+matrizSensibilidade[2][2] = ' - '
+matrizSensibilidade[2][3] = ' - '
+matrizSensibilidade[2][4] = ' - '
+
+# F1
+matrizSensibilidade[3][0] = 'F1'
+matrizSensibilidade[3][1] = 0
+matrizSensibilidade[3][2] = matriz[3][2]
+matrizSensibilidade[3][3] = arrF1.max()
+matrizSensibilidade[3][4] = arrF2.min() * -1
+
+# F2
+matrizSensibilidade[4][0] = 'F2'
+matrizSensibilidade[4][1] = 0
+matrizSensibilidade[4][2] = matriz[3][3]
+matrizSensibilidade[4][3] = arrF2.max()
+matrizSensibilidade[4][4] = arrF2.min() * -1
+
+# F3
+matrizSensibilidade[5][0] = 'F3'
+matrizSensibilidade[5][1] = round(matriz[1][5])
+matrizSensibilidade[5][2] = 0
+matrizSensibilidade[5][3] = arrF3.max()
+matrizSensibilidade[5][4] = arrF3.min() * -1
+
+# Z
+matrizSensibilidade[6][0] = 'Z'
+matrizSensibilidade[6][1] = round(matriz[3][5])
+matrizSensibilidade[6][2] = ' - '
+matrizSensibilidade[6][3] = ' - '
+matrizSensibilidade[6][4] = ' - '
+
+print("\nMatriz Sensibilidade:")
+for lin in range(0, 7):
+    for col in range(0, 5):
+        print("[{:1}]      ".format(matrizSensibilidade[lin][col]), end='')  # Orientação e Organização
+    print()  # Pula linha
